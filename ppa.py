@@ -24,11 +24,11 @@ CHROMA_DIR = "db"
 def load_generation_llm():
     tokenizer = AutoTokenizer.from_pretrained(GEN_MODEL)
 
-    # SAFE GPU LOAD → NO META TENSORS
+    # SAFE GPU LOAD
     try:
         model = AutoModelForSeq2SeqLM.from_pretrained(
             GEN_MODEL,
-            torch_dtype=torch.float32   # safest option
+            torch_dtype=torch.float32   
         )
         if torch.cuda.is_available():
             model = model.to("cuda")
@@ -36,7 +36,7 @@ def load_generation_llm():
         st.warning(f"GPU load failed: {e}. Falling back to CPU.")
         model = AutoModelForSeq2SeqLM.from_pretrained(GEN_MODEL)
 
-    # Create generation pipeline
+   
     text_pipe = pipeline(
         "text2text-generation",
         model=model,
@@ -48,9 +48,9 @@ def load_generation_llm():
 
     return HuggingFacePipeline(pipeline=text_pipe)
 
-# -------------------
+
 # BUILD RAG CHAIN
-# -------------------
+
 @st.cache_resource
 def build_qa_chain():
     llm = load_generation_llm()
@@ -67,17 +67,14 @@ def build_qa_chain():
         return_source_documents=True
     )
 
-# -------------------
-# PROCESS QUERY
-# -------------------
+
 def process_answer(question: str):
     qa = build_qa_chain()
     result = qa(question)
     return result.get("result"), result
 
-# -------------------
 # UI
-# -------------------
+
 def main():
     st.title("RAG PDF Search — RTX 3050 Optimized 🚀")
 
@@ -94,3 +91,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
