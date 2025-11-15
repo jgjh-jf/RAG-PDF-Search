@@ -1,7 +1,4 @@
 
-
-
-# ingest.py (robust, with checks)
 import os
 import sys
 import traceback
@@ -10,7 +7,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PDFMinerLoader
 from langchain_community.vectorstores import Chroma
 
-# Try preferred embedding from langchain-huggingface, fall back to SentenceTransformerEmbeddings
+
 try:
     from langchain_huggingface import HuggingFaceEmbeddings
     EMB_CLASS = "huggingface"
@@ -52,9 +49,9 @@ def split_documents(documents, chunk_size=500, chunk_overlap=50):
 
 
 def get_texts_from_documents(docs):
-    # docs are Document objects — convert to plain strings for embeddings
+   
     texts = [d.page_content if hasattr(d, "page_content") else str(d) for d in docs]
-    # optionally filter blank strings
+   
     texts = [t for t in texts if t and t.strip()]
     return texts
 
@@ -66,7 +63,7 @@ def create_embeddings(texts, model_name="all-MiniLM-L6-v2"):
     else:
         embedder = SentenceTransformerEmbeddings(model_name=model_name)
 
-    # compute vectors explicitly so we can validate
+   
     try:
         vectors = embedder.embed_documents(texts)
     except Exception as e:
@@ -125,3 +122,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
